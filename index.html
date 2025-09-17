@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>文件Base64转换工具集合</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* 左侧导航栏 */
+      .sidebar {
+        width: 280px;
+        background: #2c3e50;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar-header {
+        padding: 20px;
+        background: #34495e;
+        border-bottom: 1px solid #1a252f;
+      }
+
+      .sidebar-header h1 {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .sidebar-header p {
+        font-size: 12px;
+        color: #bdc3c7;
+      }
+
+      .nav-menu {
+        flex: 1;
+        padding: 20px 0;
+      }
+
+      .nav-category {
+        margin-bottom: 25px;
+      }
+
+      .nav-category-title {
+        padding: 0 20px 10px;
+        font-size: 12px;
+        color: #bdc3c7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: bold;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 20px;
+        color: #ecf0f1;
+        text-decoration: none;
+        transition: all 0.3s;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .nav-item:hover {
+        background: #34495e;
+        border-left-color: #3498db;
+      }
+
+      .nav-item.active {
+        background: #34495e;
+        border-left-color: #e74c3c;
+        color: white;
+      }
+
+      .nav-item .icon {
+        font-size: 16px;
+        width: 20px;
+        margin-right: 12px;
+        text-align: center;
+        flex-shrink: 0;
+        align-self: flex-start;
+        margin-top: 2px;
+      }
+
+      .nav-item .text-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .nav-item .title {
+        font-size: 14px;
+        font-weight: 500;
+        display: block;
+        line-height: 1.3;
+        margin-bottom: 1px;
+      }
+
+      .nav-item .subtitle {
+        font-size: 11px;
+        color: #bdc3c7;
+        display: block;
+        line-height: 1.2;
+        opacity: 0.8;
+      }
+
+      /* 侧边栏底部 */
+      .sidebar-footer {
+        padding: 20px;
+        border-top: 1px solid #1a252f;
+        background: #34495e;
+      }
+
+      .github-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        color: #ecf0f1;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.3s;
+        background: #2c3e50;
+        border: 1px solid #34495e;
+      }
+
+      .github-link:hover {
+        background: #3498db;
+        border-color: #3498db;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+      }
+
+      .github-link .icon {
+        font-size: 16px;
+        margin-right: 10px;
+      }
+
+      .github-link .text {
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* 主内容区域 */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .content-header {
+        background: white;
+        padding: 20px 30px;
+        border-bottom: 1px solid #e9ecef;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .content-header h2 {
+        font-size: 24px;
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      .content-header p {
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+
+      .content-body {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+        background: #f8f9fa;
+      }
+
+      .tool-container {
+        display: none;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .tool-container.active {
+        display: block;
+      }
+
+      /* 响应式并排布局 */
+      @media (min-width: 1200px) {
+        .tool-container.active {
+          display: flex;
+          gap: 30px;
+          align-items: flex-start;
+        }
+
+        .tool-section {
+          flex: 1;
+          margin-bottom: 0;
+          height: fit-content;
+        }
+      }
+
+      /* 中等屏幕保持上下布局 */
+      @media (max-width: 1199px) {
+        .tool-container.active {
+          display: block;
+        }
+      }
+
+      .tool-section {
+        background: white;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .section-title {
+        font-size: 18px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ecf0f1;
+      }
+
+      /* 表单元素样式 */
+      textarea {
+        width: 100%;
+        height: 200px;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        resize: none;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: #3498db;
+      }
+
+      /* 在并排布局时调整textarea高度 */
+      @media (min-width: 1200px) {
+        textarea {
+          height: 180px;
+        }
+        
+        .file-info {
+          max-height: 200px;
+          overflow-y: auto;
+        }
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      button,
+      .file-upload-button {
+        padding: 12px 20px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+      }
+
+      button:hover,
+      .file-upload-button:hover {
+        background: #2980b9;
+        transform: translateY(-1px);
+      }
+
+      button.success {
+        background: #27ae60;
+      }
+
+      button.success:hover {
+        background: #229954;
+      }
+
+      button.danger {
+        background: #e74c3c;
+      }
+
+      button.danger:hover {
+        background: #c0392b;
+      }
+
+      button:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      /* 文件信息显示 */
+      .file-info {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+        min-height: 120px;
+        display: none;
+      }
+
+      .file-info.show {
+        display: block;
+      }
+
+      .file-info h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+
+      .file-info-item {
+        margin-bottom: 10px;
+        color: #5a6c7d;
+        font-size: 14px;
+      }
+
+      .file-info-item strong {
+        color: #2c3e50;
+        margin-right: 10px;
+      }
+
+      .info-text {
+        background: #e8f4f8;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        color: #2c3e50;
+        font-size: 13px;
+        line-height: 1.6;
+        border-radius: 0 6px 6px 0;
+      }
+
+      .no-file {
+        text-align: center;
+        color: #7f8c8d;
+        padding: 30px;
+      }
+
+      .file-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+      }
+
+      /* .stats-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        font-size: 14px;
+        color: #5a6c7d;
+      }
+
+      .stat-item {
+        background: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+      } */
+
+      /* Toast提示 */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #2c3e50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 6px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .toast.success {
+        background: #27ae60;
+      }
+
+      .toast.error {
+        background: #e74c3c;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 100%;
+          position: fixed;
+          z-index: 1000;
+          transform: translateX(-100%);
+          transition: transform 0.3s;
+        }
+
+        .sidebar.show {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          width: 100%;
+        }
+
+        .content-body {
+          padding: 20px;
+        }
+
+        .button-group {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        /* 移动端强制上下布局 */
+        .tool-container.active {
+          display: block !important;
+        }
+
+        .tool-section {
+          flex: none !important;
+          margin-bottom: 25px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- 左侧导航栏 -->
+      <nav class="sidebar">
+        <div class="sidebar-header">
+          <h1>文件Base64转换工具集</h1>
+          <p>离线版本 - 保护您的隐私</p>
+        </div>
+        
+        <div class="nav-menu">
+          <div class="nav-category">
+            <div class="nav-category-title">Base64 转换</div>
+            
+            <a class="nav-item active" onclick="switchTool('image-to-base64')">
+              <span class="icon">🖼️</span>
+              <div class="text-content">
+                <span class="title">图片转换</span>
+                <span class="subtitle">图片 ↔ Base64</span>
+              </div>
+            </a>
+            
+            <a class="nav-item" onclick="switchTool('archive-to-base64')">
+              <span class="icon">📦</span>
+              <div class="text-content">
+                <span class="title">压缩文件转换</span>
+                <span class="subtitle">ZIP/RAR/7Z ↔ Base64</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="nav-category">
+            <div class="nav-category-title">即将推出</div>
+            
+            <a class="nav-item" style="opacity: 0.5; cursor: not-allowed;">
+              <span class="icon">📄</span>
+              <div class="text-content">
+                <span class="title">文档转换</span>
+                <span class="subtitle">PDF/Word ↔ Base64</span>
+              </div>
+            </a>
+            
+            <a class="nav-item" style="opacity: 0.5; cursor: not-allowed;">
+              <span class="icon">🎵</span>
+              <div class="text-content">
+                <span class="title">音频转换</span>
+                <span class="subtitle">MP3/WAV ↔ Base64</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        
+        <div class="sidebar-footer">
+          <a href="https://github.com/scqilin/file-base64-converter" target="_blank" class="github-link">
+            <span class="icon">⭐</span>
+            <span class="text">GitHub 项目地址</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- 主内容区域 -->
+      <main class="main-content">
+        <div class="content-header">
+          <h2 id="current-tool-title">图片转换工具</h2>
+          <p id="current-tool-description">支持JPG、PNG、GIF等常见图片格式与Base64之间的相互转换</p>
+        </div>
+
+        <div class="content-body">
+          <!-- 图片转换工具 -->
+          <div id="image-to-base64" class="tool-container active">
+            <!-- 图片转Base64 -->
+            <div class="tool-section">
+              <h3 class="section-title">🖼️ 图片 → Base64</h3>
+              
+              <textarea id="imageBase64Output" placeholder="Base64结果会显示在这里" readonly></textarea>
+              
+              <div class="button-group">
+                <label class="file-upload-button">
+                  <span>📁</span>
+                  上传图片
+                  <input type="file" class="file-input" id="imageFileInput" accept="image/*" />
+                </label>
+                <button onclick="pasteImageFromClipboard()">
+                  <span>📋</span>
+                  粘贴图片
+                </button>
+                <button class="success" onclick="copyImageBase64()">
+                  <span>📋</span>
+                  复制Base64
+                </button>
+                <button class="danger" onclick="clearImageBase64()">
+                  <span>🗑️</span>
+                  清除
+                </button>
+              </div>
+
+              <div id="imageFileInfo" class="file-info">
+                <div class="no-file">
+                  <div class="file-icon">🖼️</div>
+                  <p>请选择图片文件</p>
+                </div>
+              </div>
+
+              <div class="info-text">
+                <strong>使用说明：</strong><br>
+                1. 点击"上传图片"选择文件，或点击"粘贴图片"从剪贴板获取<br>
+                2. 支持 JPG、PNG、GIF、BMP、WebP 等常见格式<br>
+                3. 自动转换为Base64格式，并保留原始文件名信息<br>
+                4. 转换的Base64包含文件名，还原时会自动使用原始文件名<br>
+                5. 所有处理都在本地完成，确保文件安全
+              </div>
+            </div>
+
+            <!-- Base64转图片 -->
+            <div class="tool-section">
+              <h3 class="section-title">🔄 Base64 → 图片</h3>
+              
+              <textarea id="imageBase64Input" placeholder="粘贴图片的Base64编码（如：data:image/png;base64,...)"></textarea>
+              
+              <div class="button-group">
+                <button onclick="pasteImageBase64()">
+                  <span>📋</span>
+                  粘贴Base64
+                </button>
+                <button onclick="convertBase64ToImage()">
+                  <span>🔄</span>
+                  转换为图片
+                </button>
+                <button id="downloadImageBtn" class="success" disabled onclick="downloadImage()">
+                  <span>💾</span>
+                  下载图片
+                </button>
+                <button class="danger" onclick="clearImageConvert()">
+                  <span>🗑️</span>
+                  清除
+                </button>
+              </div>
+
+              <div id="imagePreview" class="file-info">
+                <div class="no-file">
+                  <div class="file-icon">🖼️</div>
+                  <p>图片预览区域</p>
+                </div>
+              </div>
+
+              <div class="info-text">
+                <strong>使用说明：</strong><br>
+                1. 粘贴包含完整data:image前缀的Base64编码<br>
+                2. 如果Base64包含文件名信息，会自动识别并显示原始文件名<br>
+                3. 点击"转换为图片"生成预览<br>
+                4. 确认无误后点击"下载图片"保存到本地（使用原始文件名）<br>
+                5. 支持自动识别图片格式并设置正确的文件扩展名
+              </div>
+            </div>
+          </div>
+
+          <!-- 压缩文件转换工具 -->
+          <div id="archive-to-base64" class="tool-container">
+            <!-- 压缩文件转Base64 -->
+            <div class="tool-section">
+              <h3 class="section-title">📦 压缩文件 → Base64</h3>
+              
+              <textarea id="archiveBase64Output" placeholder="Base64结果会显示在这里" readonly></textarea>
+              
+              <div class="button-group">
+                <label class="file-upload-button">
+                  <span>📁</span>
+                  上传压缩文件
+                  <input type="file" class="file-input" id="archiveFileInput" accept=".zip,.rar,.7z,.tar,.gz,.bz2,.xz" />
+                </label>
+                <button class="success" onclick="copyArchiveBase64()">
+                  <span>📋</span>
+                  复制Base64
+                </button>
+                <button class="danger" onclick="clearArchiveBase64()">
+                  <span>🗑️</span>
+                  清除
+                </button>
+              </div>
+
+              <!-- <div class="stats-row">
+                <div class="stat-item">
+                  <strong>文件大小:</strong> <span id="archiveFileSize">0 KB</span>
+                </div>
+              </div> -->
+
+              <div id="archiveFileInfo" class="file-info">
+                <div class="no-file">
+                  <div class="file-icon">📦</div>
+                  <p>请选择压缩文件</p>
+                </div>
+              </div>
+
+              <div class="info-text">
+                <strong>使用说明：</strong><br>
+                1. 支持常见压缩格式：ZIP、RAR、7Z、TAR、GZ、BZ2、XZ<br>
+                2. 上传后自动转换为Base64，并保留原始文件名<br>
+                3. 转换的Base64包含文件名信息，还原时自动使用原名<br>
+                4. 所有处理都在浏览器本地完成，不会上传到服务器
+              </div>
+            </div>
+
+            <!-- Base64转压缩文件 -->
+            <div class="tool-section">
+              <h3 class="section-title">🔄 Base64 → 压缩文件</h3>
+              
+              <textarea id="archiveBase64Input" placeholder="粘贴压缩文件的Base64编码..."></textarea>
+              
+              <div class="button-group">
+                <button onclick="pasteArchiveBase64()">
+                  <span>📋</span>
+                  粘贴Base64
+                </button>
+                <button onclick="convertBase64ToArchive()">
+                  <span>🔄</span>
+                  转换为文件
+                </button>
+                <button id="downloadArchiveBtn" class="success" disabled onclick="downloadArchive()">
+                  <span>💾</span>
+                  下载文件
+                </button>
+                <button class="danger" onclick="clearArchiveConvert()">
+                  <span>🗑️</span>
+                  清除
+                </button>
+              </div>
+
+              <div id="archivePreview" class="file-info">
+                <div class="no-file">
+                  <div class="file-icon">📦</div>
+                  <p>文件预览区域</p>
+                </div>
+              </div>
+
+              <div class="info-text">
+                <strong>使用说明：</strong><br>
+                1. 粘贴压缩文件的Base64编码（支持自动识别文件名）<br>
+                2. 点击"转换为文件"解析Base64数据<br>
+                3. 如果包含文件名信息，会自动使用原始文件名<br>
+                4. 点击"下载文件"保存到本地，保持原始格式
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Toast提示 -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+      // 全局变量
+      let currentImageFile = null;
+      let currentArchiveFile = null;
+      let currentArchiveFileName = '';
+      let currentArchiveFileType = '';
+
+      // 工具切换
+      function switchTool(toolId) {
+        // 更新导航状态
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+
+        // 更新内容区域
+        document.querySelectorAll('.tool-container').forEach(container => {
+          container.classList.remove('active');
+        });
+        document.getElementById(toolId).classList.add('active');
+
+        // 更新标题
+        const titles = {
+          'image-to-base64': {
+            title: '图片转换工具',
+            description: '支持JPG、PNG、GIF等常见图片格式与Base64之间的相互转换'
+          },
+          'archive-to-base64': {
+            title: '压缩文件转换工具',
+            description: '支持ZIP、RAR、7Z等压缩文件格式与Base64之间的相互转换'
+          }
+        };
+
+        if (titles[toolId]) {
+          document.getElementById('current-tool-title').textContent = titles[toolId].title;
+          document.getElementById('current-tool-description').textContent = titles[toolId].description;
+        }
+      }
+
+      // ===== 图片转换功能 =====
+      
+      // 图片文件上传
+      document.getElementById('imageFileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        currentImageFile = file;
+        
+        showImageFileInfo(file);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // 为图片也创建包含文件名的Base64格式
+          const base64WithFileName = createBase64WithFileName(e.target.result, file.name);
+          document.getElementById('imageBase64Output').value = base64WithFileName;
+          showToast('图片转换成功！', 'success');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // 显示图片文件信息
+      function showImageFileInfo(file) {
+        const fileInfo = document.getElementById('imageFileInfo');
+        const extension = getFileExtension(file.name);
+        
+        fileInfo.innerHTML = `
+          <h3>🖼️ 图片信息</h3>
+          <div class="file-info-item">
+            <strong>文件名：</strong>${file.name}
+          </div>
+          <div class="file-info-item">
+            <strong>文件大小：</strong>${formatFileSize(file.size)}
+          </div>
+          <div class="file-info-item">
+            <strong>文件类型：</strong>${extension.toUpperCase()} 图片
+          </div>
+          <div class="file-info-item">
+            <strong>最后修改：</strong>${new Date(file.lastModified).toLocaleString()}
+          </div>
+        `;
+        fileInfo.classList.add('show');
+      }
+
+      // 从剪贴板粘贴图片
+      async function pasteImageFromClipboard() {
+        try {
+          const clipboardItems = await navigator.clipboard.read();
+          for (const clipboardItem of clipboardItems) {
+            for (const type of clipboardItem.types) {
+              if (type.startsWith('image/')) {
+                const blob = await clipboardItem.getType(type);
+                
+                // 创建一个虚拟文件对象
+                const file = new File([blob], `clipboard_${Date.now()}.png`, { type: blob.type });
+                currentImageFile = file;
+                
+                showImageFileInfo(file);
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  // 为粘贴的图片也创建包含文件名的Base64格式
+                  const base64WithFileName = createBase64WithFileName(e.target.result, file.name);
+                  document.getElementById('imageBase64Output').value = base64WithFileName;
+                  showToast('图片粘贴成功！', 'success');
+                };
+                reader.readAsDataURL(blob);
+                return;
+              }
+            }
+          }
+          showToast('剪贴板中没有图片', 'error');
+        } catch (err) {
+          console.error('粘贴图片失败:', err);
+          showToast('粘贴图片失败，请确保已复制图片', 'error');
+        }
+      }
+
+      // 复制图片Base64
+      async function copyImageBase64() {
+        const output = document.getElementById('imageBase64Output');
+        if (!output.value) {
+          showToast('没有可复制的Base64内容！', 'error');
+          return;
+        }
+        
+        try {
+          await navigator.clipboard.writeText(output.value);
+          showToast('Base64复制成功！', 'success');
+        } catch (err) {
+          showToast('复制失败，请手动选择文本复制', 'error');
+        }
+      }
+
+      // 清除图片Base64
+      function clearImageBase64() {
+        document.getElementById('imageBase64Output').value = '';
+        document.getElementById('imageFileInput').value = '';
+        document.getElementById('imageFileInfo').classList.remove('show');
+        currentImageFile = null;
+      }
+
+      // 粘贴图片Base64
+      async function pasteImageBase64() {
+        try {
+          const text = await navigator.clipboard.readText();
+          document.getElementById('imageBase64Input').value = text;
+          showToast('粘贴成功！', 'success');
+          convertBase64ToImage();
+        } catch (err) {
+          showToast('粘贴失败，请确保已复制Base64内容', 'error');
+        }
+      }
+
+      // Base64转图片
+      function convertBase64ToImage() {
+        const base64Input = document.getElementById('imageBase64Input').value.trim();
+        if (!base64Input) {
+          showToast('请输入Base64文本！', 'error');
+          return;
+        }
+
+        // 先尝试提取文件名
+        const { fileName, base64Data } = extractFileNameFromBase64(base64Input);
+        
+        if (!base64Data.startsWith('data:image/')) {
+          showToast('Base64格式错误，请确保是图片的Base64编码！', 'error');
+          return;
+        }
+
+        const img = document.createElement('img');
+        img.src = base64Data;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '300px';
+        img.style.borderRadius = '6px';
+        
+        // 保存文件名以供下载使用
+        window.currentImageFileName = fileName;
+        
+        img.onload = () => {
+          const preview = document.getElementById('imagePreview');
+          const fileNameInfo = fileName ? `<div class="file-info-item"><strong>原始文件名：</strong>${fileName}</div>` : '';
+          preview.innerHTML = `
+            <h3>🖼️ 图片预览</h3>
+            ${fileNameInfo}
+            <div style="text-align: center; margin-top: 15px;">
+              ${img.outerHTML}
+            </div>
+          `;
+          preview.classList.add('show');
+          document.getElementById('downloadImageBtn').disabled = false;
+          showToast('图片转换成功！', 'success');
+        };
+        
+        img.onerror = () => {
+          showToast('Base64格式错误，请检查！', 'error');
+          document.getElementById('downloadImageBtn').disabled = true;
+        };
+      }
+
+      // 下载图片
+      function downloadImage() {
+        const base64Input = document.getElementById('imageBase64Input').value.trim();
+        if (!base64Input) return;
+
+        // 提取实际的Base64数据（去除文件名信息）
+        const { fileName, base64Data } = extractFileNameFromBase64(base64Input);
+
+        const link = document.createElement('a');
+        link.href = base64Data;
+        
+        // 使用提取的文件名或生成默认文件名
+        if (fileName) {
+          link.download = fileName;
+          showToast(`使用原始文件名下载: ${fileName}`, 'success');
+        } else {
+          // 根据MIME类型确定文件扩展名
+          const mimeMatch = base64Data.match(/data:image\/([^;]+)/);
+          const extension = mimeMatch ? mimeMatch[1] : 'png';
+          link.download = `image_${Date.now()}.${extension}`;
+          showToast('图片下载开始！', 'success');
+        }
+        
+        link.click();
+      }
+
+      // 清除图片转换
+      function clearImageConvert() {
+        document.getElementById('imageBase64Input').value = '';
+        document.getElementById('imagePreview').innerHTML = `
+          <div class="no-file">
+            <div class="file-icon">🖼️</div>
+            <p>图片预览区域</p>
+          </div>
+        `;
+        document.getElementById('downloadImageBtn').disabled = true;
+      }
+
+      // ===== 压缩文件转换功能 =====
+
+      // 压缩文件上传
+      document.getElementById('archiveFileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        currentArchiveFile = file;
+        currentArchiveFileName = file.name;
+        currentArchiveFileType = file.type || getFileTypeByExtension(file.name);
+
+        // document.getElementById('archiveFileSize').textContent = formatFileSize(file.size);
+        showArchiveFileInfo(file);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64WithFileName = createBase64WithFileName(e.target.result, file.name);
+          document.getElementById('archiveBase64Output').value = base64WithFileName;
+          showToast('文件转换成功！', 'success');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // 显示压缩文件信息
+      function showArchiveFileInfo(file) {
+        const fileInfo = document.getElementById('archiveFileInfo');
+        const extension = getFileExtension(file.name);
+        const icon = getFileIcon(extension);
+        
+        fileInfo.innerHTML = `
+          <h3>${icon} 文件信息</h3>
+          <div class="file-info-item">
+            <strong>文件名：</strong>${file.name}
+          </div>
+          <div class="file-info-item">
+            <strong>文件大小：</strong>${formatFileSize(file.size)}
+          </div>
+          <div class="file-info-item">
+            <strong>文件类型：</strong>${extension.toUpperCase()} 压缩文件
+          </div>
+          <div class="file-info-item">
+            <strong>最后修改：</strong>${new Date(file.lastModified).toLocaleString()}
+          </div>
+        `;
+        fileInfo.classList.add('show');
+      }
+
+      // 复制压缩文件Base64
+      async function copyArchiveBase64() {
+        const output = document.getElementById('archiveBase64Output');
+        if (!output.value) {
+          showToast('没有可复制的Base64内容！', 'error');
+          return;
+        }
+        
+        try {
+          await navigator.clipboard.writeText(output.value);
+          showToast('Base64复制成功！', 'success');
+        } catch (err) {
+          showToast('复制失败，请手动选择文本复制', 'error');
+        }
+      }
+
+      // 清除压缩文件Base64
+      function clearArchiveBase64() {
+        document.getElementById('archiveBase64Output').value = '';
+        document.getElementById('archiveFileInput').value = '';
+        // document.getElementById('archiveFileSize').textContent = '0 KB';
+        document.getElementById('archiveFileInfo').classList.remove('show');
+        currentArchiveFile = null;
+        currentArchiveFileName = '';
+        currentArchiveFileType = '';
+      }
+
+      // 粘贴压缩文件Base64
+      async function pasteArchiveBase64() {
+        try {
+          const text = await navigator.clipboard.readText();
+          document.getElementById('archiveBase64Input').value = text;
+          showToast('粘贴成功！', 'success');
+          convertBase64ToArchive();
+        } catch (err) {
+          showToast('粘贴失败，请确保已复制Base64内容', 'error');
+        }
+      }
+
+      // Base64转压缩文件
+      function convertBase64ToArchive() {
+        const base64Input = document.getElementById('archiveBase64Input').value.trim();
+        if (!base64Input) {
+          showToast('请输入Base64文本！', 'error');
+          return;
+        }
+
+        try {
+          const { fileName, base64Data } = extractFileNameFromBase64(base64Input);
+          
+          if (!base64Data.startsWith('data:')) {
+            showToast('Base64格式错误，请确保包含完整的data:前缀！', 'error');
+            return;
+          }
+
+          const mimeMatch = base64Data.match(/data:([^;]+)/);
+          const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+          
+          if (fileName) {
+            currentArchiveFileName = fileName;
+            showToast(`检测到原始文件名: ${fileName}`, 'success');
+          } else {
+            const extension = getExtensionFromMimeType(mimeType);
+            currentArchiveFileName = `file_${Date.now()}.${extension}`;
+          }
+          currentArchiveFileType = mimeType;
+
+          showArchivePreview(base64Data, mimeType, getFileExtension(currentArchiveFileName));
+          
+          document.getElementById('downloadArchiveBtn').disabled = false;
+          showToast('Base64解析成功！', 'success');
+        } catch (error) {
+          showToast('Base64格式错误，请检查！', 'error');
+          document.getElementById('downloadArchiveBtn').disabled = true;
+        }
+      }
+
+      // 显示压缩文件预览
+      function showArchivePreview(base64Data, mimeType, extension) {
+        const preview = document.getElementById('archivePreview');
+        const icon = getFileIcon(extension);
+        
+        const base64Size = Math.round((base64Data.length * 3) / 4);
+        
+        preview.innerHTML = `
+          <h3>${icon} 文件预览</h3>
+          <div class="file-info-item">
+            <strong>文件名：</strong>${currentArchiveFileName}
+          </div>
+          <div class="file-info-item">
+            <strong>预估大小：</strong>${formatFileSize(base64Size)}
+          </div>
+          <div class="file-info-item">
+            <strong>文件类型：</strong>${extension.toUpperCase()} 压缩文件
+          </div>
+          <div class="file-info-item">
+            <strong>MIME类型：</strong>${mimeType}
+          </div>
+        `;
+        preview.classList.add('show');
+      }
+
+      // 下载压缩文件
+      function downloadArchive() {
+        const base64Input = document.getElementById('archiveBase64Input').value.trim();
+        if (!base64Input) return;
+
+        try {
+          const { base64Data } = extractFileNameFromBase64(base64Input);
+          
+          const link = document.createElement('a');
+          link.href = base64Data;
+          link.download = currentArchiveFileName;
+          link.click();
+          showToast('文件下载开始！', 'success');
+        } catch (error) {
+          showToast('下载失败，请检查Base64格式！', 'error');
+        }
+      }
+
+      // 清除压缩文件转换
+      function clearArchiveConvert() {
+        document.getElementById('archiveBase64Input').value = '';
+        document.getElementById('archivePreview').innerHTML = `
+          <div class="no-file">
+            <div class="file-icon">📦</div>
+            <p>文件预览区域</p>
+          </div>
+        `;
+        document.getElementById('downloadArchiveBtn').disabled = true;
+        currentArchiveFileName = '';
+        currentArchiveFileType = '';
+      }
+
+      // ===== 通用工具函数 =====
+
+      // 创建包含文件名的Base64格式
+      function createBase64WithFileName(base64Data, fileName) {
+        const fileNameBase64 = btoa(encodeURIComponent(fileName));
+        return `FILENAME:${fileNameBase64}|${base64Data}`;
+      }
+
+      // 从Base64数据中提取文件名
+      function extractFileNameFromBase64(base64Data) {
+        if (base64Data.startsWith('FILENAME:')) {
+          const parts = base64Data.split('|');
+          if (parts.length >= 2) {
+            const fileNameBase64 = parts[0].replace('FILENAME:', '');
+            try {
+              const fileName = decodeURIComponent(atob(fileNameBase64));
+              const actualBase64 = parts.slice(1).join('|');
+              return { fileName, base64Data: actualBase64 };
+            } catch (e) {
+              console.error('解析文件名失败:', e);
+            }
+          }
+        }
+        return { fileName: null, base64Data: base64Data };
+      }
+
+      // 获取文件扩展名
+      function getFileExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+      }
+
+      // 根据扩展名获取文件类型
+      function getFileTypeByExtension(filename) {
+        const ext = getFileExtension(filename);
+        const typeMap = {
+          'zip': 'application/zip',
+          'rar': 'application/x-rar-compressed',
+          '7z': 'application/x-7z-compressed',
+          'tar': 'application/x-tar',
+          'gz': 'application/gzip',
+          'bz2': 'application/x-bzip2',
+          'xz': 'application/x-xz'
+        };
+        return typeMap[ext] || 'application/octet-stream';
+      }
+
+      // 根据MIME类型获取扩展名
+      function getExtensionFromMimeType(mimeType) {
+        const typeMap = {
+          'application/zip': 'zip',
+          'application/x-rar-compressed': 'rar',
+          'application/x-7z-compressed': '7z',
+          'application/x-tar': 'tar',
+          'application/gzip': 'gz',
+          'application/x-bzip2': 'bz2',
+          'application/x-xz': 'xz'
+        };
+        return typeMap[mimeType] || 'zip';
+      }
+
+      // 获取文件图标
+      function getFileIcon(extension) {
+        const iconMap = {
+          'zip': '🗜️',
+          'rar': '📦',
+          '7z': '🗃️',
+          'tar': '📁',
+          'gz': '🗜️',
+          'bz2': '📦',
+          'xz': '🗃️'
+        };
+        return iconMap[extension] || '📄';
+      }
+
+      // 格式化文件大小
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Toast提示
+      function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.classList.add('show');
+
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>
