@@ -282,7 +282,7 @@
 
       button,
       .file-upload-button {
-        padding: 12px 20px;
+        padding: 12px 12px;
         background: #3498db;
         color: white;
         border: none;
@@ -381,21 +381,6 @@
         font-size: 48px;
         margin-bottom: 10px;
       }
-
-      /* .stats-row {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        font-size: 14px;
-        color: #5a6c7d;
-      }
-
-      .stat-item {
-        background: #f8f9fa;
-        padding: 8px 12px;
-        border-radius: 4px;
-        border: 1px solid #e9ecef;
-      } */
 
       /* Toast提示 */
       .toast {
@@ -643,12 +628,6 @@
                   清除
                 </button>
               </div>
-
-              <!-- <div class="stats-row">
-                <div class="stat-item">
-                  <strong>文件大小:</strong> <span id="archiveFileSize">0 KB</span>
-                </div>
-              </div> -->
 
               <div id="archiveFileInfo" class="file-info">
                 <div class="no-file">
@@ -962,7 +941,6 @@
         currentArchiveFileName = file.name;
         currentArchiveFileType = file.type || getFileTypeByExtension(file.name);
 
-        // document.getElementById('archiveFileSize').textContent = formatFileSize(file.size);
         showArchiveFileInfo(file);
 
         const reader = new FileReader();
@@ -1018,7 +996,6 @@
       function clearArchiveBase64() {
         document.getElementById('archiveBase64Output').value = '';
         document.getElementById('archiveFileInput').value = '';
-        // document.getElementById('archiveFileSize').textContent = '0 KB';
         document.getElementById('archiveFileInfo').classList.remove('show');
         currentArchiveFile = null;
         currentArchiveFileName = '';

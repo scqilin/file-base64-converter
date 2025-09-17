@@ -88,6 +88,8 @@ cd file-base64-converter
 file-base64-converter/
 ├── index.html          # 主页面文件
 └── README.md           # 项目说明文档
+├── docs
+│   └── index.html      # 在线文档 压缩版本
 ```
 
 ## 🛠️ 扩展性
@@ -125,7 +127,7 @@ file-base64-converter/
 ---
 
 **开发者**: [scqilin](https://github.com/scqilin)  
-**项目地址**: [https://github.com/scqilin/file-base64-converter](https://github.com/scqilin/file-base64-converter)
+**项目地址**: [https://github.com/scqilin/file-base64-converter](https://github.com/scqilin/file-base64-converter)  
 **在线地址**: [https://scqilin.github.io/file-base64-converter/](https://scqilin.github.io/file-base64-converter/)
 
 如果这个工具对您有帮助，请给个 ⭐ Star 支持一下！
